@@ -1,7 +1,6 @@
 package com.example.sudoku
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
@@ -9,8 +8,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,7 +57,7 @@ fun SudokuGame() {
                 Box(
                     modifier = Modifier
                         .size(40.dp)
-                        .border(1.dp, Color.Black) // Default thin border
+
                         .background(if (row == 0) Color.LightGray else Color.White)
                         .clickable {
                             if (row != 0) {
@@ -65,6 +65,45 @@ fun SudokuGame() {
                                 showDialog = true
                             }
                         }
+                        .drawBehind {
+                            val strokeWidth = 3.dp.toPx() // Bold border width
+                            val cellSize = size.width
+
+                            // Thick vertical line every 3 columns OR for the last column
+                            if ((col + 1) % 3 == 0 || col == 8) {  // Ensures the last column gets a thick right border
+                                drawLine(
+                                    color = Color.Black,
+                                    start = Offset(cellSize, 0f),
+                                    end = Offset(cellSize, size.height),
+                                    strokeWidth = strokeWidth
+                                )
+                            }
+
+                            // Thick horizontal line every 3 rows OR for the last row
+                            if ((row + 1) % 3 == 0 || row == 8) {  // Ensures the last row gets a thick bottom border
+                                drawLine(
+                                    color = Color.Black,
+                                    start = Offset(0f, size.height),
+                                    end = Offset(size.width, size.height),
+                                    strokeWidth = strokeWidth
+                                )
+                            }
+
+                            // Thin default grid lines
+                            drawLine(
+                                color = Color.Gray,
+                                start = Offset(0f, 0f),
+                                end = Offset(size.width, 0f),
+                                strokeWidth = 1.dp.toPx()
+                            )
+                            drawLine(
+                                color = Color.Gray,
+                                start = Offset(0f, 0f),
+                                end = Offset(0f, size.height),
+                                strokeWidth = 1.dp.toPx()
+                            )
+                        }
+
                         .padding(4.dp),
                     contentAlignment = Alignment.Center
                 ) {
